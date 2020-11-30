@@ -1,9 +1,11 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 //In reducers we are expressing an intent to change the state we are not changing the state directly
 import { ADD_MOVIES, 
+    ADD_MOVIE_TO_LIST,
     ADD_TO_FAVOURITES,
     REMOVE_FROM_FAVOURITES,
-    SET_SHOW_FAVOURITES} from '../actions'; 
+    SET_SHOW_FAVOURITES,
+    ADD_SEARCH_RESULT} from '../actions'; 
 
 const initialMoviesState= {
     list: [],
@@ -18,6 +20,7 @@ export  function movies(state= initialMoviesState, action){
         };
     }
     return state;*/
+    console.log('MOVIES REDUCER');
     switch(action.type){
          case ADD_MOVIES:
              return {
@@ -33,15 +36,21 @@ export  function movies(state= initialMoviesState, action){
            const filteredArray= state.favourites.filter(
                movie=>movie.Title !== action.movie.Title
            );
+
            return{
               ...state,
               favourites: filteredArray
-           }
+           };
            case SET_SHOW_FAVOURITES:
             return{
                 ...state,
                 showFavourites: action.val
-            }  
+            };
+            case ADD_MOVIE_TO_LIST:
+                return {
+                    ...state,
+                    list: [action.movie,...state.list]
+            } ;
         default: 
            return state;
     }
@@ -50,17 +59,34 @@ export  function movies(state= initialMoviesState, action){
 
 //search reducer
 const initialSearchState= {
+    showSearchResults: false,
     result: {}
 };
 
 export function search(state=initialSearchState,action){
-    return state;
+        console.log('Search Reducer');
+         switch(action.type){
+              case ADD_SEARCH_RESULT:
+                  return{
+                      ...state,
+                      result:action.movie,
+                      showSearchResults: true
+                  }
+                  case ADD_MOVIE_TO_LIST:
+                     return {
+                    ...state,
+                    showSearchResults:false
+            }
+             default: 
+                return state;
+         
+}
 }
 //rootReducer
-const initialRootState={
-    movies:initialMoviesState,
-    search:initialSearchState
-}
+// const initialRootState={
+//     movies: initialMoviesState,
+//     search:initialSearchState
+// }
 // export default function rootReducer(state = initialRootState,action){
 //    return{
 //        movies: movies(state.movies,action)  ,
@@ -69,6 +95,7 @@ const initialRootState={
 // }
 
 export default combineReducers({
-    movies: movies,
-    search: search
-})
+    movies,
+    search
+});
+
